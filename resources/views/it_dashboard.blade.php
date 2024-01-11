@@ -4,74 +4,182 @@
 @endsection
 @section('content')
 <div class="wrapper wrapper-content ">
-<div class="row">
-    <div class="col-lg-2 text-center">
-        <div class="ibox text-center">
-            <div class="ibox-title">
-                <div class="ibox-tools text-center">
-                    <span class="label label-info pull-right">as of {{date('M. d, Y')}}</span>
+    <div class="row">
+        <div class="col-lg-3 text-center">
+            <div class="row">
+                <div class="col-lg-6 text-center">
+                    <div class="ibox-title">
+                        <div class="ibox-tools text-center">
+                            <span class="label label-info pull-right">as of {{date('M. d, Y')}}</span>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins text-danger">{{count($tickets->where('closed',null))}}</h1>
+                        <small>Total Open Tickets</small>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="ibox-title">
+                        <div class="ibox-tools text-center">
+                            <span class="label label-info pull-right">as of {{date('M. d, Y')}}</span>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{count($tickets_today)}}</h1>
+                        {{-- <div class="stat-percent font-bold text-navy">20% <i class="fa fa-level-up"></i></div> --}}
+                        <small>Created Today</small>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    
+                    <div class="ibox-content">
+                        <h1 class="no-margins text-danger"><span id='due_tickets'>0</span></h1>
+                        <small>Due Tickets (Open)</small>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{count($closed_date)}}</h1>
+                        {{-- <div class="stat-percent font-bold text-navy">20% <i class="fa fa-level-up"></i></div> --}}
+                        <small>Closed Today</small>
+                    </div>
                 </div>
             </div>
-            <div class="ibox-content">
-                <h1 class="no-margins text-danger">{{count($tickets->where('closed',null))}}</h1>
-                <small>Total Open Tickets</small>
-            </div>
-            <div class="ibox-content">
-                <h1 class="no-margins">{{count($tickets_today)}}</h1>
-                {{-- <div class="stat-percent font-bold text-navy">20% <i class="fa fa-level-up"></i></div> --}}
-                <small>Created Today</small>
-            </div>
-            <div class="ibox-content">
-                <h1 class="no-margins">{{count($closed_date)}}</h1>
-                {{-- <div class="stat-percent font-bold text-navy">20% <i class="fa fa-level-up"></i></div> --}}
-                <small>Closed Today</small>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Tickets </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table id='table' class="table table-striped table-bordered table-hover tables">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Backlogs Tickets(OPEN)</th>
+                                    <th>Ticket this ({{date('M Y')}})</th>
+                                    <th>Closed this Month</th>
+                                    <th>Open Tickets</th>
+                                    <th>Closed Today</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
+                                <tr>
+                                    <td>{{$employee->firstname}} {{$employee->lastname}}</td>
+                                    <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
+                                    <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
+                                    <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
+                                    <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
+                                    <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
+                                </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-6 text-center">
-    <div class="ibox float-e-margins">
-        <div class="ibox-title">
-            <h5>Tickets </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
-        </div>
-        <div class="ibox-content">
-            <div class="table-responsive">
-                <table id='table' class="table table-striped table-bordered table-hover tables">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Backlogs Tickets(OPEN)</th>
-                            <th>Ticket this ({{date('M Y')}})</th>
-                            <th>Closed this Month</th>
-                            <th>Open Tickets</th>
-                            <th>Closed Today</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
-                        <tr>
-                            <td>{{$employee->firstname}} {{$employee->lastname}}</td>
-                            <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
-                            <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
-                            <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
-                            <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
-                            <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
-                        </tr>
-                        @endforeach
+    <div class='row'>
+        <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Tickets </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table id='table' class="table table-striped table-bordered table-hover tables">
+                            <thead>
+                                <tr>
+                                    <th>Ticket Number</th>
+                                    <th>Requestor</th>
+                                    <th>Subject</th>
+                                    <th>Priority Level</th>
+                                    <th>Staff Assigned</th>
+                                    <th>Date Created</th>
+                                    <th>First Response</th>
+                                    <th>Target</th>
+                                    <th>Closed Date</th>
+                                    <th>Ticket Duration</th>
+                                    <th>Remarks</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $delayed = 0;
+                                @endphp
+                                @foreach($tickets_this_month_request->whereNotIn('staff_id',[5,10,8]) as $ticket)
+                                <tr>
+                                    <td>{{$ticket->number}}</td>
+                                    <td>{{$ticket->user->name}}</td>
+                                    <td><small>{{$ticket->ticket_data->subject}}</small></td>
+                                    <td>{{$ticket->ticket_data->priority_data->priority_desc}}</td>
+                                    <td>@if($ticket->employee){{$ticket->employee->firstname}} {{$ticket->employee->lastname}}@else No IT Assigned @endif</td>
+                                    <td>{{$ticket->created}}</td>
+                                    <td>@if(count($ticket->reply->reply_thread)>0){{$ticket->reply->reply_thread[0]->created}}@endif</td>
+                                    @php
+                                        $priority = $ticket->ticket_data->priority_data->priority_desc;
+                                        if ($priority == "Low") {
+                                            $due_date = date('Y-m-d h:m', strtotime('+5 days',strtotime($ticket->created)));
+                                        } elseif ($priority == "Medium") {
+                                            $due_date = date('Y-m-d h:m', strtotime('+3 days',strtotime($ticket->created)));
+                                        } elseif ($priority == "High") {
+                                            $due_date = date('Y-m-d h:m', strtotime('+1 day',strtotime($ticket->created)));
+                                        } elseif ($priority == "Critical") {
+                                            $due_date = date('Y-m-d h:m', strtotime('+4 hours',strtotime($ticket->created)));
+                                        }
+                                        if($ticket->closed != null)
+                                        {
+                                            $datetime = strtotime($due_date)-strtotime($ticket->closed);
+                                            $datediff = strtotime($ticket->closed)-strtotime($ticket->created);
+                                        }
+                                        else {
+                                            $datetime = strtotime($due_date)-strtotime(date('Y-m-d H:i:s'));
+                                            $datediff = strtotime(date('Y-m-d H:i:s'))-strtotime($ticket->created);
+                                        }
+                                    @endphp
+                                    <td>{{$due_date}}</td>
+                                    <td>@if($ticket->closed != null){{$ticket->closed}}@endif</td>
+                                    <td>
+                                      
+                                        {{number_format($datediff/60/60/24,2)}} Days
 
-                    </tbody>
-                </table>
+                                    </td>
+                                    <td>
+                                        @if($datetime>=0)
+                                        Not Delayed
+                                        @else
+                                            Delayed
+                                        @endif
+                                    </td>
+                                    <td>{{$ticket->status_data->name}}</td>
+                                    @php
+                                        if(($ticket->status_data->name == "Open") && ($datetime<0))
+                                        {
+                                            $delayed++;
+                                        }
+                                    @endphp
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
-
-        </div>
-    </div>
+</div>
 </div>
 @endsection
 @section('footer')
 <script src="{{ asset('/inside/login_css/js/plugins/dataTables/datatables.min.js')}}"></script>
 <script src="{{ asset('/inside/login_css/js/plugins/chosen/chosen.jquery.js') }}"></script>
 <script>
-
-     
+ var delayed = {!! json_encode($delayed) !!};
+ document.getElementById("due_tickets").innerHTML = delayed;
 $(document).ready(function(){
 
 $('.cat').chosen({width: "100%"});

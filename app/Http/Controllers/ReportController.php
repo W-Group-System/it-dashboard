@@ -9,9 +9,20 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     public function index(Request $request) {
+        $date = $request->month."-01";
+        if($request->month == null)
+        {
+            $date = date('Y-m-d');
+        }
         $tickets = OstTicket::get();
         $tickets_today = OstTicket::whereDate('created',date('Y-m-d'))->get();
         $tickets_this_month = OstTicket::whereYear('created',date('Y'))->whereMonth('created',date('m'))->get();
+
+
+        $tickets_this_month_request = OstTicket::whereYear('created',date('Y',strtotime($date)))->whereMonth('created',date('m',strtotime($date)))->orWhere('closed',null)->get();
+
+
+
         $closed_this_month = OstTicket::whereYear('closed',date('Y'))->whereMonth('closed',date('m'))->get();
         $closed_date = OstTicket::whereDate('closed',date('Y-m-d'))->get();
         $employees = Employee::where('isactive',1)->get();
@@ -23,6 +34,7 @@ class ReportController extends Controller
             'employees' => $employees,
             'tickets_this_month' => $tickets_this_month,
             'closed_this_month' => $closed_this_month,
+            'tickets_this_month_request' => $tickets_this_month_request,
         )
     );
     }
