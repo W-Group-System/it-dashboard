@@ -24,7 +24,7 @@ class ReportController extends Controller
             ->whereMonth('created', date('m', strtotime($date)))
             ->orWhere(function ($query) use ($date) {
                 $query->where('closed', null)
-                    ->where('created', '<', $date);
+                    ->whereDate('created', '<', $date);
             })
             ->where('staff_id',$request->staff)
             ->get(); 
@@ -35,7 +35,7 @@ class ReportController extends Controller
             ->whereMonth('created', date('m', strtotime($date)))
             ->orWhere(function ($query) use ($date) {
                 $query->where('closed', null)
-                    ->where('created', '<', $date);
+                    ->whereDate('created', '<', $date);
             })
             ->get(); 
         }
