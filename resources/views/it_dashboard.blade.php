@@ -224,7 +224,7 @@
 <script src="{{ asset('/inside/login_css/js/plugins/chosen/chosen.jquery.js') }}"></script>
 <script>
  var delayed = {!! json_encode($delayed) !!};
- var avg_percent_total = {!! json_encode(number_format($avg_percent_total/$percent,2)) !!}
+ var avg_percent_total = {!! json_encode(number_format($avg_percent_total/$percent_count,2)) !!}
  document.getElementById("due_tickets").innerHTML = delayed;
  document.getElementById("avg_ticket").innerHTML = avg_percent_total;
 $(document).ready(function(){
