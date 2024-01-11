@@ -56,7 +56,7 @@ class ReportController extends Controller
             'tickets_this_month' => $tickets_this_month,
             'closed_this_month' => $closed_this_month,
             'tickets_this_month_request' => $tickets_this_month_request,
-            'staff' => $request->staff,
+            'staff' => $date,
             'month' => $request->month,
         )
     );

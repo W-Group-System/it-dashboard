@@ -97,14 +97,14 @@
                                 <select name='staff' class='form-control select cat'>
                                     <option value=''>All</option>
                                     @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
-                                    <option value='{{$employee->staff_id}}' @if($staff == $employee->staff_id) selected @endif>{{$employee->firstname}} {{$employee->lastname}}</option>
+                                        <option value='{{$employee->staff_id}}' @if($staff == $employee->staff_id) selected @endif>{{$employee->firstname}} {{$employee->lastname}}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-lg-2">
                                 <button class="btn btn-primary mt-4" type="submit" id='submit'>Generate</button>
                             </div>
-                            <div class="col-lg-4"> <small>Total : <span id="total_generated_ticket">0</span> | Open : <span id="open_tickets_generated">0</span> | Delayed : <span id="delayed_tickets_generated">0</span></small><h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
+                            <div class="col-lg-4"> <small>Total : <span id="total_generated_ticket">{{count($tickets_this_month_request->whereNotIn('staff_id',[5,10,8]))}}</span> | Open : <span id="open_tickets_generated">{{count($tickets_this_month_request->whereNotIn('staff_id',[5,10,8])->where('status_id',1))}}</span> | Delayed : <span id="delayed_tickets_generated">0</span></small><h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
                             </div>
                         </div>
                     </form>
@@ -140,9 +140,11 @@
                             </thead>
                             <tbody>
                                 @php
-                                    $delayed = 0;
+                                    $due = 0;
                                     $avg_percent_total=0;
                                     $percent_count=0;
+                                    $open=0;
+                                    $delayed=0;
                                 @endphp
                                 @foreach($tickets_this_month_request->whereNotIn('staff_id',[5,10,8]) as $ticket)
                                 <tr>
@@ -198,6 +200,9 @@
                                         @if($datetime>=0)
                                         Not Delayed
                                         @else
+                                        @php
+                                            $delayed++;
+                                        @endphp
                                             Delayed
                                         @endif
                                     </td>
@@ -205,7 +210,7 @@
                                     @php
                                         if(($ticket->status_data->name == "Open") && ($datetime<0))
                                         {
-                                            $delayed++;
+                                            $due++;
                                         }
                                     @endphp
                                 </tr>
@@ -223,10 +228,12 @@
 <script src="{{ asset('/inside/login_css/js/plugins/dataTables/datatables.min.js')}}"></script>
 <script src="{{ asset('/inside/login_css/js/plugins/chosen/chosen.jquery.js') }}"></script>
 <script>
+ var due = {!! json_encode($due) !!};
  var delayed = {!! json_encode($delayed) !!};
  var avg_percent_total = {!! json_encode(number_format($avg_percent_total/$percent_count,2)) !!}
- document.getElementById("due_tickets").innerHTML = delayed;
+ document.getElementById("due_tickets").innerHTML = due;
  document.getElementById("avg_ticket").innerHTML = avg_percent_total;
+ document.getElementById("delayed_tickets_generated").innerHTML = delayed;
 $(document).ready(function(){
 
 $('.cat').chosen({width: "100%"});
