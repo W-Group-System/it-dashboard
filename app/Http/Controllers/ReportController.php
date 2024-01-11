@@ -23,6 +23,10 @@ class ReportController extends Controller
             $tickets_this_month_request = OstTicket::whereYear('created', date('Y', strtotime($date)))
             ->whereMonth('created', date('m', strtotime($date)))
             ->where('staff_id',$request->staff)
+            ->orWhere(function ($query) use ($date) {
+                $query->where('closed', null)
+                    ->whereDate('created', '<', $date);
+            })
             ->get(); 
         }
         else
