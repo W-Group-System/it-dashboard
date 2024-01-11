@@ -9,8 +9,8 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     public function index(Request $request) {
-        $date = $request->month."-t";
-        dd($date);
+        $date = $request->month."-01";
+        // dd($date);
         if($request->month == null)
         {
             $date = date('Y-m-d');
