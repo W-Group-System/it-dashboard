@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="ibox-content">
-                <h1 class="no-margins">{{count($tickets->where('closed',null))}}</h1>
+                <h1 class="no-margins text-danger">{{count($tickets->where('closed',null))}}</h1>
                 <small>Total Open Tickets</small>
             </div>
             <div class="ibox-content">
@@ -39,7 +39,8 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Ticket this Month</th>
+                            <th>Backlogs Tickets</th>
+                            <th>Ticket this ({{date('M Y')}})</th>
                             <th>Closed this Month</th>
                             <th>Open Tickets</th>
                             <th>Closed Today</th>
@@ -49,6 +50,7 @@
                         @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
                         <tr>
                             <td>{{$employee->firstname}} {{$employee->lastname}}</td>
+                            <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
                             <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
                             <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
                             <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
