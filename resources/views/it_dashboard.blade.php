@@ -130,6 +130,7 @@
                                     <th>Target</th>
                                     <th>Closed Date</th>
                                     <th>Ticket Duration</th>
+                                    <th>%</th>
                                     <th>Remarks</th>
                                     <th>Status</th>
                                 </tr>
@@ -150,13 +151,17 @@
                                     @php
                                         $priority = $ticket->ticket_data->priority_data->priority_desc;
                                         if ($priority == "Low") {
+                                            $per =5;
                                             $due_date = date('Y-m-d h:m', strtotime('+5 days',strtotime($ticket->created)));
                                         } elseif ($priority == "Medium") {
                                             $due_date = date('Y-m-d h:m', strtotime('+3 days',strtotime($ticket->created)));
+                                            $per =3;
                                         } elseif ($priority == "High") {
                                             $due_date = date('Y-m-d h:m', strtotime('+1 day',strtotime($ticket->created)));
+                                            $per =1
                                         } elseif ($priority == "Critical") {
                                             $due_date = date('Y-m-d h:m', strtotime('+4 hours',strtotime($ticket->created)));
+                                            $per =.17;
                                         }
                                         if($ticket->closed != null)
                                         {
@@ -174,6 +179,12 @@
                                       
                                         {{number_format($datediff/60/60/24,2)}} Days
 
+                                    </td>
+                                    <td >
+                                        @php
+                                            $percent = (($datediff/60/60/24)/$per)*100;
+                                        @endphp
+                                        {{number_format($percent,2)}} %
                                     </td>
                                     <td>
                                         @if($datetime>=0)
