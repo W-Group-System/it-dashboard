@@ -39,7 +39,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Backlogs Tickets</th>
+                            <th>Backlogs Tickets(OPEN)</th>
                             <th>Ticket this ({{date('M Y')}})</th>
                             <th>Closed this Month</th>
                             <th>Open Tickets</th>
