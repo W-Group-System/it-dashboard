@@ -84,6 +84,32 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form  method='GET' onsubmit='show();'  enctype="multipart/form-data" >
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <input name='month' type='month' value='{{$month}}' class='form-control' required>
+                            </div>
+                            <div class="col-lg-3">
+                                <select name='staff' class='form-control select cat'>
+                                    <option value=''>All</option>
+                                    @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
+                                    <option value='{{$employee->staff_id}}' @if($staff == $employee->staff_id) selected @endif>{{$employee->firstname}} {{$employee->lastname}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <button class="btn btn-primary mt-4" type="submit" id='submit'>Generate</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>    
+        </div>
+    </div>
     <div class='row'>
         <div class="ibox float-e-margins">
                 <div class="ibox-title">
