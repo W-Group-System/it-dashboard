@@ -104,7 +104,7 @@
                             <div class="col-lg-2">
                                 <button class="btn btn-primary mt-4" type="submit" id='submit'>Generate</button>
                             </div>
-                            <div class="col-lg-4"> <small>Total : <span id="total_generated_ticket">0</span> Closed : <span id="closed_tickets_generated">0</span> Open : <span id="open_tickets_generated">0</span></small><h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
+                            <div class="col-lg-4"> <small>Total : <span id="total_generated_ticket">0</span>Open : <span id="open_tickets_generated">0</span></small><h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
                             </div>
                         </div>
                     </form>
