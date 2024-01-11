@@ -158,7 +158,7 @@
                                             $per =3;
                                         } elseif ($priority == "High") {
                                             $due_date = date('Y-m-d h:m', strtotime('+1 day',strtotime($ticket->created)));
-                                            $per =1
+                                            $per =1;
                                         } elseif ($priority == "Critical") {
                                             $due_date = date('Y-m-d h:m', strtotime('+4 hours',strtotime($ticket->created)));
                                             $per =.17;
