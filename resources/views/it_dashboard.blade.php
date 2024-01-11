@@ -106,6 +106,7 @@
                             </div>
                         </div>
                     </form>
+                    <h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
                 </div>
             </div>    
         </div>
