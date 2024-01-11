@@ -104,9 +104,11 @@
                             <div class="col-lg-2">
                                 <button class="btn btn-primary mt-4" type="submit" id='submit'>Generate</button>
                             </div>
+                            <div class="col-lg-4"><h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
+                            </div>
                         </div>
                     </form>
-                    <h1 class="no-margins text-danger text-right"><span id="avg_ticket">0.00</span> %</h1>
+                    
                 </div>
             </div>    
         </div>
@@ -139,6 +141,8 @@
                             <tbody>
                                 @php
                                     $delayed = 0;
+                                    $avg_percent_total=0;
+                                    $percent_count=0;
                                 @endphp
                                 @foreach($tickets_this_month_request->whereNotIn('staff_id',[5,10,8]) as $ticket)
                                 <tr>
@@ -184,6 +188,9 @@
                                     <td >
                                         @php
                                             $percent = (($datediff/60/60/24)/$per)*100;
+                                            $avg_percent_total = $avg_percent_total + $percent;
+                                            $percent_count++;
+
                                         @endphp
                                         {{number_format($percent,2)}} %
                                     </td>
@@ -217,7 +224,9 @@
 <script src="{{ asset('/inside/login_css/js/plugins/chosen/chosen.jquery.js') }}"></script>
 <script>
  var delayed = {!! json_encode($delayed) !!};
+ var avg_percent_total = {!! json_encode(number_format($avg_percent_total/$percent,2)) !!}
  document.getElementById("due_tickets").innerHTML = delayed;
+ document.getElementById("avg_ticket").innerHTML = avg_percent_total;
 $(document).ready(function(){
 
 $('.cat').chosen({width: "100%"});
