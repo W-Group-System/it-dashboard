@@ -5,7 +5,7 @@
 @section('content')
 <div class="wrapper wrapper-content ">
     <div class="row">
-        <div class="col-lg-3 text-center">
+        <div class="col-lg-4 text-center">
             <div class="row">
                 <div class="col-lg-6 text-center">
                     <div class="ibox-title">
@@ -14,7 +14,7 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-                        <h1 class="no-margins text-danger">{{count($tickets->where('closed',null))}}</h1>
+                        <h1 class="no-margins text-danger">{{count($tickets)}}</h1>
                         <small>Total Open Tickets</small>
                     </div>
                 </div>
@@ -45,6 +45,43 @@
                     </div>
                 </div>
             </div>
+            <br>
+            <div class='row pt-5'>
+                <div class="col-lg-12 text-center">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Biometrics Uptime </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <table id='table' class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Biometrics</th>
+                                        <th>Last Attendance</th>
+                                        <th></th>
+                                      </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($biometrics as $biometric)
+                                    
+                                        <tr>
+                                            <td>{{$biometric->location}}</td>
+                                            <td>{{$biometric->datetime}}</td>
+                                            <td>
+                                            @if(date('Y-m-d',strtotime($biometric->datetime)) != date('Y-m-d')) <span class='label label-danger pull-right'>Need to re-sync</span>@else <span class='label label-info pull-right'>No Error</span> @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+    
+                    </div>
+                </div>
+                </div>
+            </div>
+            
         </div>
         <div class="col-lg-6 text-center">
             <div class="ibox float-e-margins">
