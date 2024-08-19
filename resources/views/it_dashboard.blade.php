@@ -5,118 +5,164 @@
 @section('content')
 <div class="wrapper wrapper-content ">
     <div class="row">
-        <div class="col-lg-4 text-center">
-            <div class="row">
-                <div class="col-lg-6 text-center">
-                    <div class="ibox-title">
-                        <div class="ibox-tools text-center">
-                            <span class="label label-info pull-right">as of {{date('M. d, Y')}}</span>
+        <div class="col-lg-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-warning pull-right">as of {{date('M. d, Y')}}</span>
+                    <h5>Tickets</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <small class="stats-label">Total Open Tickets</small>
+                            <h4>{{count($tickets)}}</h4>
+                        </div>
+
+                        <div class="col-xs-4">
+                            <small class="stats-label">Delayed Tickets</small>
+                            <h4><span id='due_tickets'>0</span></h4>
+                        </div>
+                        <div class="col-xs-4">
+                            <small class="stats-label">Total Ticket ({{date('M. Y')}})</small>
+                            <h4><span id='total_ticket'>0</span></h4>
                         </div>
                     </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins text-danger">{{count($tickets)}}</h1>
-                        <small>Total Open Tickets</small>
-                    </div>
                 </div>
-                <div class="col-lg-6 text-center">
-                    <div class="ibox-title">
-                        <div class="ibox-tools text-center">
-                            <span class="label label-info pull-right">as of {{date('M. d, Y')}}</span>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <small class="stats-label">New Tickets</small>
+                            <h4>{{count($tickets_today)}}</h4>
                         </div>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{count($tickets_today)}}</h1>
-                        {{-- <div class="stat-percent font-bold text-navy">20% <i class="fa fa-level-up"></i></div> --}}
-                        <small>Created Today</small>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                    
-                    <div class="ibox-content">
-                        <h1 class="no-margins text-danger"><span id='due_tickets'>0</span></h1>
-                        <small>Due Tickets (Open)</small>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{count($closed_date)}}</h1>
-                        {{-- <div class="stat-percent font-bold text-navy">20% <i class="fa fa-level-up"></i></div> --}}
-                        <small>Closed Today</small>
+
+                        <div class="col-xs-4">
+                            <small class="stats-label">Closed Today</small>
+                            <h4>{{count($closed_date)}}</h4>
+                        </div>
+                        <div class="col-xs-4">
+                            <small class="stats-label">Closed Ticket ({{date('M. Y')}})</small>
+                            <h4><span id='total_closed_ticket'>0</span></h4>
+                        </div>
                     </div>
                 </div>
             </div>
-            <br>
-            <div class='row pt-5'>
-                <div class="col-lg-12 text-center">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Biometrics Uptime </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="table-responsive">
-                            <table id='table' class="table table-striped table-bordered table-hover">
+            {{-- <div class="ibox float-e-margins">
+        
+            <div class="ibox-content">
+                <div class="table-responsive">
+                    <table id='table' class="table table-striped table-bordered table-hover tables">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Backlogs Tickets (OPEN)</th>
+                                <th>Ticket this ({{date('M Y')}})</th>
+                                <th>Closed this Month</th>
+                                <th>Open Tickets</th>
+                                <th>Closed Today</th>
+                            </tr>
+                        </thead>
+                        <tbody> --}}
+                            @php
+                                $total_ticket_this_month = 0;
+                                $total_closed_this_month = 0;
+                                $backlogs_open = 0;
+                                $employees_data = [];
+                            @endphp
+                            @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
+                            {{-- <tr>
+                                <td>{{$employee->firstname}} {{$employee->lastname}}</td>
+                                <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
+                                <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
+                                <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
+                                <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
+                                <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
+                            </tr> --}}
+                            @php
+                                $object = new stdClass();
+                                $object->y = $employee->firstname." ".$employee->lastname;
+                                $object->a =count($tickets_this_month->where('staff_id',$employee->staff_id));
+                                $object->b =count($tickets->where('closed',null)->where('staff_id',$employee->staff_id));
+                                $object->c =(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
+                
+                                $employees_data[] = $object;
+                                $backlogs_open = $backlogs_open + (count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
+                                $total_ticket_this_month = $total_ticket_this_month + count($tickets_this_month->where('staff_id',$employee->staff_id));
+                                $total_closed_this_month =  $total_closed_this_month + count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
+                            @endphp
+                            @endforeach
+
+                        {{-- </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>  --}}
+     
+      
+        </div> 
+        <div class="col-lg-8">
+            <div class='row'>
+                <div class='col-lg-7 text-center stretch'>
+                    
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Biometrics</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content " style="overflow-y: scroll; height:400px;">
+                            <table class="table table-hover no-margins">
                                 <thead>
-                                    <tr>
-                                        <th>Biometrics</th>
-                                        <th>Last Attendance</th>
-                                        <th></th>
-                                      </tr>
+                                <tr>
+                                    <th>Location</th>
+                                    <th>Last Log</th>
+                                    <th>Status</th>
+                                </tr>
                                 </thead>
-                                <tbody>
+                                <tbody >
                                     @foreach($biometrics as $biometric)
-                                    
-                                        <tr>
-                                            <td>{{$biometric->location}}</td>
-                                            <td>{{$biometric->datetime}}</td>
-                                            <td>
-                                            @if(date('Y-m-d',strtotime($biometric->datetime)) != date('Y-m-d')) <span class='label label-danger pull-right'>Need to re-sync</span>@else <span class='label label-info pull-right'>No Error</span> @endif
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td>{{$biometric->location}}</td>
+                                        <td><i class="fa fa-clock-o"></i> {{$biometric->datetime}}</td>
+                                        <td>@if(date('Y-m-d',strtotime($biometric->datetime)) != date('Y-m-d')) <span class='label label-danger pull-right'>Need to re-sync</span>@else <span class='label label-info pull-right'>No Error</span> @endif</td>
+                                    </tr>
                                     @endforeach
+                            
                                 </tbody>
                             </table>
                         </div>
-    
                     </div>
-                </div>
+        
                 </div>
             </div>
-            
+            <div class='row'>
+                <div class="col-lg-5 text-center stretch">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Tickets <span class="label label-danger pull-right">as of {{date('M. Y')}}</span></h5>
+        
+                        </div>
+                        <div class="ibox-content">
+                            <div id="morris-donut-chart" ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
         </div>
-        <div class="col-lg-6 text-center">
+       
+    </div>
+    <div class='row'>
+        <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Tickets </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
+                    <h5>Ticket per IT Personnel</h5>
                 </div>
                 <div class="ibox-content">
-                    <div class="table-responsive">
-                        <table id='table' class="table table-striped table-bordered table-hover tables">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Backlogs Tickets(OPEN)</th>
-                                    <th>Ticket this ({{date('M Y')}})</th>
-                                    <th>Closed this Month</th>
-                                    <th>Open Tickets</th>
-                                    <th>Closed Today</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
-                                <tr>
-                                    <td>{{$employee->firstname}} {{$employee->lastname}}</td>
-                                    <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
-                                    <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
-                                    <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
-                                    <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
-                                    <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
-                                </tr>
-                                @endforeach
-
-                            </tbody>
-                        </table>
-                    </div>
-
+                    <div id="morris-bar-chart"></div>
                 </div>
             </div>
         </div>
@@ -264,13 +310,28 @@
 @section('footer')
 <script src="{{ asset('/inside/login_css/js/plugins/dataTables/datatables.min.js')}}"></script>
 <script src="{{ asset('/inside/login_css/js/plugins/chosen/chosen.jquery.js') }}"></script>
+
+
+<script src="{{ asset('/inside/login_css/js/plugins/morris/raphael-2.1.0.min.js') }}"></script>
+<script src="{{ asset('/inside/login_css/js/plugins/morris/morris.js') }}"></script>
+
+
+<script src="{{ asset('/inside/login_css/js/plugins/d3/d3.min.js') }}"></script>
+<script src="{{ asset('/inside/login_css/js/plugins/c3/c3.min.js') }}"></script>
 <script>
  var due = {!! json_encode($due) !!};
+ var total_ticket_this_month = {!! json_encode($total_ticket_this_month) !!};
+ var open_tickets = {!! json_encode(($tickets->count())) !!};
+ var total_closed_this_month = {!! json_encode($total_closed_this_month) !!};
+ var backlogs_open = {!! json_encode($backlogs_open) !!};
  var delayed = {!! json_encode($delayed) !!};
  var avg_percent_total = {!! json_encode(number_format($avg_percent_total/$percent_count,2)) !!}
+ var employees = {!! json_encode($employees_data) !!};
  document.getElementById("due_tickets").innerHTML = due;
  document.getElementById("avg_ticket").innerHTML = avg_percent_total;
  document.getElementById("delayed_tickets_generated").innerHTML = delayed;
+ document.getElementById("total_ticket").innerHTML = total_ticket_this_month;
+ document.getElementById("total_closed_ticket").innerHTML = total_closed_this_month;
 $(document).ready(function(){
 
 $('.cat').chosen({width: "100%"});
@@ -287,7 +348,35 @@ $('.tables').DataTable({
 });
 
 });
+
+$(function() {
+            Morris.Donut({
+            element: 'morris-donut-chart',
+            data:[
+                
+                { label: "Open - Not delayed", value: open_tickets-due-backlogs_open },
+                { label: "Open - Delayed", value: due },
+                { label: "Closed", value: total_closed_this_month }, 
+                { label: "Backlogs Open", value: backlogs_open }, 
+            ],
+            resize: true,
+            colors: ['#FFA500','#f44336', '#54cdb4','#f44336'],
+        });
+        Morris.Bar({
+        element: 'morris-bar-chart',
+        data: employees,
+        xkey: 'y',
+        ykeys: ['a', 'b','c'],
+        labels: ['Ticket this Month', 'Open Tickets','Backlog Tickets (Open)'],
+        hideHover: 'auto',
+        resize: true,
+        barColors: ['#54cdb4','#f44336','#FFA500'],
+    });
+        
+    });
 </script>
+
+{{-- <script src="{{ asset('/inside/login_css/js/demo/chartjs-demo.js') }}"></script> --}}
 
 @endsection
 
