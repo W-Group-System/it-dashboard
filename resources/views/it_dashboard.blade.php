@@ -1,6 +1,8 @@
 @extends('layouts.header')
 @section('css')
 <link href="{{ asset('/inside/login_css/css/plugins/chosen/bootstrap-chosen.css') }}" rel="stylesheet">
+<link href="{{ asset('/inside/login_css/css/plugins/c3/c3.min.css') }}" rel="stylesheet">
+<link href="{{ asset('/inside/login_css/css/plugins/morris/morris-0.4.3.min.css') }}" rel="stylesheet">
 @endsection
 @section('content')
 <div class="wrapper wrapper-content ">
@@ -46,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="ibox float-e-margins">
+            <div class="ibox float-e-margins">
         
             <div class="ibox-content">
                 <div class="table-responsive">
@@ -61,48 +63,53 @@
                                 <th>Closed Today</th>
                             </tr>
                         </thead>
-                        <tbody> --}}
+                        <tbody>
                             @php
                                 $total_ticket_this_month = 0;
                                 $total_closed_this_month = 0;
                                 $backlogs_open = 0;
                                 $employees_data = [];
+                                $employees_data_data = [];
                             @endphp
                             @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
-                            {{-- <tr>
+                            <tr>
                                 <td>{{$employee->firstname}} {{$employee->lastname}}</td>
                                 <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
                                 <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
                                 <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
                                 <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
                                 <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
-                            </tr> --}}
+                            </tr>
                             @php
                                 $object = new stdClass();
+                                $object_data = new stdClass();
                                 $object->y = $employee->firstname." ".$employee->lastname;
+                                $object_data->label = $employee->firstname." ".$employee->lastname;
+                                $object_data->value = count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
                                 $object->a =count($tickets_this_month->where('staff_id',$employee->staff_id));
                                 $object->b =count($tickets->where('closed',null)->where('staff_id',$employee->staff_id));
                                 $object->c =(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
                 
-                                $employees_data[] = $object;
+                                // $employees_data[] = $object;
+                                $employees_data_data[] = $object_data;
                                 $backlogs_open = $backlogs_open + (count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
                                 $total_ticket_this_month = $total_ticket_this_month + count($tickets_this_month->where('staff_id',$employee->staff_id));
                                 $total_closed_this_month =  $total_closed_this_month + count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
                             @endphp
                             @endforeach
 
-                        {{-- </tbody>
+                        </tbody>
                     </table>
                 </div>
 
             </div>
-        </div>  --}}
+        </div> 
      
       
         </div> 
         <div class="col-lg-8">
             <div class='row'>
-                <div class='col-lg-7 text-center stretch'>
+                <div class='col-lg-6 text-center stretch'>
                     
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
@@ -137,7 +144,7 @@
                     </div>
         
                 </div>
-                <div class="col-lg-5 text-center stretch">
+                <div class="col-lg-3 text-center ">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
                             <h5>Tickets <span class="label label-danger pull-right">as of {{date('M. Y')}}</span></h5>
@@ -148,24 +155,36 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-3 text-center ">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Tickets Closed<span class="label label-danger pull-right">as of {{date('M. Y')}}</span></h5>
+        
+                        </div>
+                        <div class="ibox-content">
+                            <div id="morris-donut-chart-employees" ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='row'>
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Ticket per IT Personnel</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="morris-bar-chart"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
               
            
         </div>
        
     </div>
-    <div class='row'>
-        <div class="col-lg-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>Ticket per IT Personnel</h5>
-                </div>
-                <div class="ibox-content">
-                    <div id="morris-bar-chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+  
     <div class="row">
         <div class="col-md-12">
             <div class="ibox float-e-margins">
@@ -326,6 +345,8 @@
  var delayed = {!! json_encode($delayed) !!};
  var avg_percent_total = {!! json_encode(number_format($avg_percent_total/$percent_count,2)) !!}
  var employees = {!! json_encode($employees_data) !!};
+ var employees_data_data = {!! json_encode($employees_data_data) !!};
+ var months = {!! json_encode(($months)) !!};
  document.getElementById("due_tickets").innerHTML = due;
  document.getElementById("avg_ticket").innerHTML = avg_percent_total;
  document.getElementById("delayed_tickets_generated").innerHTML = delayed;
@@ -340,8 +361,8 @@ $('.tables').DataTable({
     responsive: true,
     dom: '<"html5buttons"B>lTfgitp',
     buttons: [
-        {extend: 'csv', title: 'Aging Report'},
-        {extend: 'excel', title: 'Aging Report'}
+        {extend: 'csv', title: 'Ticketing'},
+        {extend: 'excel', title: 'Ticketing'}
     ]
 
 });
@@ -361,15 +382,20 @@ $(function() {
             resize: true,
             colors: ['#FFA500','#f44336', '#54cdb4','#f44336'],
         });
+            Morris.Donut({
+            element: 'morris-donut-chart-employees',
+            data:employees_data_data,
+            resize: true,
+        });
         Morris.Bar({
         element: 'morris-bar-chart',
-        data: employees,
+        data: months,
         xkey: 'y',
-        ykeys: ['a', 'b','c'],
-        labels: ['Ticket this Month', 'Open Tickets','Backlog Tickets (Open)'],
+        ykeys: ['a'],
+        labels: ['Tickets'],
         hideHover: 'auto',
         resize: true,
-        barColors: ['#54cdb4','#f44336','#FFA500'],
+        barColors: ['#54cdb4'],
     });
         
     });

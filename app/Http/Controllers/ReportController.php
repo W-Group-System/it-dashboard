@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     public function index(Request $request) {
+        $months = [];
+       
+        for ($m=1; $m<=12; $m++) {
+            $object = new \stdClass();
+            $object->y =date('M-Y', mktime(0,0,0,$m, 1, date('Y')));
+            $tick = OstTicket::whereYear('created',date('Y'))->whereMonth('created',date('m',mktime(0,0,0,$m, 1, date('Y'))))->count();
+            $object->a =$tick;
+            $months[$m-1]=  $object;
+        }
         $date = date('Y-m-t',strtotime($request->month."-01"));
         if($request->month == null)
         {
@@ -62,6 +71,7 @@ class ReportController extends Controller
             'staff' => $date,
             'month' => $request->month,
             'biometrics' => $biometrics,
+            'months' => $months,
         )
     );
     }
