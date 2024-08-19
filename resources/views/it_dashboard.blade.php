@@ -48,63 +48,70 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Percent of Ticket this {{date('M Y')}}</h5>
+                </div>
+                <div class="ibox-content">
+                    <div>
+                        <div id="pie"></div>
+                    </div>
+                </div>
+            </div>
             <div class="ibox float-e-margins">
         
-            <div class="ibox-content">
-                <div class="table-responsive">
-                    <table id='table' class="table table-striped table-bordered table-hover tables">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Backlogs Tickets (OPEN)</th>
-                                <th>Ticket this ({{date('M Y')}})</th>
-                                <th>Closed this Month</th>
-                                <th>Open Tickets</th>
-                                <th>Closed Today</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $total_ticket_this_month = 0;
-                                $total_closed_this_month = 0;
-                                $backlogs_open = 0;
-                                $employees_data = [];
-                                $employees_data_data = [];
-                            @endphp
-                            @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
-                            <tr>
-                                <td>{{$employee->firstname}} {{$employee->lastname}}</td>
-                                <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
-                                <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
-                                <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
-                                <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
-                                <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
-                            </tr>
-                            @php
-                                $object = new stdClass();
-                                $object_data = new stdClass();
-                                $object->y = $employee->firstname." ".$employee->lastname;
-                                $object_data->label = $employee->firstname." ".$employee->lastname;
-                                $object_data->value = count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
-                                $object->a =count($tickets_this_month->where('staff_id',$employee->staff_id));
-                                $object->b =count($tickets->where('closed',null)->where('staff_id',$employee->staff_id));
-                                $object->c =(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
-                
-                                // $employees_data[] = $object;
-                                $employees_data_data[] = $object_data;
-                                $backlogs_open = $backlogs_open + (count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
-                                $total_ticket_this_month = $total_ticket_this_month + count($tickets_this_month->where('staff_id',$employee->staff_id));
-                                $total_closed_this_month =  $total_closed_this_month + count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
-                            @endphp
-                            @endforeach
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table id='table' class="table table-striped table-bordered table-hover tables">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Backlogs Tickets (OPEN)</th>
+                                    <th>Ticket this ({{date('M Y')}})</th>
+                                    <th>Closed this Month</th>
+                                    <th>Open Tickets</th>
+                                    <th>Closed Today</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $total_ticket_this_month = 0;
+                                    $total_closed_this_month = 0;
+                                    $backlogs_open = 0;
+                                    $employees_data = [];
+                                    $employees_data_data = [];
+                                @endphp
+                                @foreach($employees->whereNotIn('staff_id',[5,10,8]) as $employee)
+                                <tr>
+                                    <td>{{$employee->firstname}} {{$employee->lastname}}</td>
+                                    <td>{{(count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1}}</td>
+                                    <td>{{count($tickets_this_month->where('staff_id',$employee->staff_id))}}</td>
+                                    <td>{{count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id))}}</td>
+                                    <td>{{count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))}}</td>
+                                    <td>{{count($closed_date->where('staff_id',$employee->staff_id))}}</td>
+                                </tr>
+                                @php
+                                    $object = [];
+                                    $object_data = new stdClass();
+                                    $object[0] = $employee->firstname." ".$employee->lastname;
+                                    $object[1] = count($tickets_this_month->where('staff_id',$employee->staff_id));
+                                    $object_data->label = $employee->firstname." ".$employee->lastname;
+                                    $object_data->value = count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
+                                    $employees_data[] = $object;
+                                    $employees_data_data[] = $object_data;
+                                    $backlogs_open = $backlogs_open + (count($tickets_this_month->where('staff_id',$employee->staff_id))-count($tickets->where('closed',null)->where('staff_id',$employee->staff_id))-count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id)))*-1;
+                                    $total_ticket_this_month = $total_ticket_this_month + count($tickets_this_month->where('staff_id',$employee->staff_id));
+                                    $total_closed_this_month =  $total_closed_this_month + count($tickets_this_month->where('closed','!=',null)->where('staff_id',$employee->staff_id));
+                                @endphp
+                                @endforeach
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
-
-            </div>
-        </div> 
-     
+            </div> 
       
         </div> 
         <div class="col-lg-8">
@@ -397,6 +404,14 @@ $(function() {
         resize: true,
         barColors: ['#54cdb4'],
     });
+
+    c3.generate({
+                bindto: '#pie',
+                data:{
+                    columns: employees,
+                    type : 'pie'
+                }
+            });
         
     });
 </script>
