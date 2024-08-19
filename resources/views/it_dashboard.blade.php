@@ -137,7 +137,6 @@
                     </div>
         
                 </div>
-            </div>
                 <div class="col-lg-5 text-center stretch">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
@@ -149,6 +148,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+              
            
         </div>
        
