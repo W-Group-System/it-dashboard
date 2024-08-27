@@ -3,13 +3,84 @@
 namespace App\Http\Controllers;
 use App\OstTicket;
 use App\Employee;
-
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
     public function index(Request $request) {
+
+        // JIRA configuration
+        $jiraUrl = 'https://wgroup-projects.atlassian.net'; // Replace with your JIRA instance URL
+        $apiEndpoint = '/rest/api/2/search'; // Endpoint for searching issues
+        $projectKey = 'SYSDEV'; // Replace with the issue key you want to fetch
+        $username = 'renz.cabato+1@wgroup.com.ph'; // Replace with your JIRA username (email)
+        $apiToken = 'ATATT3xFfGF0jjUpscIy8_gcfU-Tb55LStavhoRe219lEPHYR8p3ekTmE4hnYkoP2BV6YYlBENiKyoC9-dWzJVfIyuz65Z_7ZvL7l-6XSTtItzoisy1duLiQruduJZGf7EwW-Qbl64ZZ2-ZZCHEnIL2lhZX9KkmWoXUD49SJ83j0V05Ghga6MEY=704BF4EF';
+
+       
+        // Function to get all issues from a project
+        function getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $apiToken,$request): Collection
+        {
+            $date_to = date('Y-m-t',strtotime($request->month."-01"));
+            $date = date('Y-m-d',strtotime($request->month."-01"));
+            if($request->month == null)
+            {
+                $date_to = date('Y-m-t');
+                $date = date('Y-m-01');
+            }
+            // Updated JQL query to filter issues by date and status
+            // dd($date);
+            $jql = "project={$projectKey} AND (created >= '{$date}' AND created <= '{$date_to}')";
+            $startAt = 0; // Start from the beginning
+            $maxResults = 1000; // Maximum results per request
+            $allIssues = collect(); // Initialize a Laravel Collection
+        
+            do {
+                // Create the URL for the API request
+                $url = $jiraUrl . $apiEndpoint;
+        
+                // Initialize cURL session
+                $ch = curl_init($url);
+        
+                // Set cURL options
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_USERPWD, $username . ':' . $apiToken);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                    'jql' => $jql,
+                    'startAt' => $startAt,
+                    'maxResults' => $maxResults
+                ]));
+        
+                // Execute the request and fetch the response
+                $response = curl_exec($ch);
+        
+                // Check for errors
+                if (curl_errno($ch)) {
+                    echo 'Error:' . curl_error($ch);
+                    curl_close($ch);
+                    return collect(); // Return an empty collection on error
+                }
+        
+                // Decode the JSON response
+                $data = json_decode($response, true);
+                curl_close($ch);
+        
+                // Add issues to the allIssues collection
+                $allIssues = $allIssues->merge($data['issues']);
+        
+                // Update startAt for pagination
+                $startAt += $maxResults;
+        
+            } while ($startAt < $data['total']); // Continue until all issues are fetched
+        
+            return $allIssues;
+        }
+
+        $issues = getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $apiToken,$request);
+        // dd($issues[0]);
         $months = [];
+        
        
         for ($m=1; $m<=12; $m++) {
             $object = new \stdClass();
@@ -72,6 +143,7 @@ class ReportController extends Controller
             'month' => $request->month,
             'biometrics' => $biometrics,
             'months' => $months,
+            'issues' => $issues,
         )
     );
     }

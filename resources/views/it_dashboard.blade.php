@@ -186,8 +186,7 @@
                     </div>
                 </div>
             </div>
-              
-           
+             
         </div>
        
     </div>
@@ -222,114 +221,161 @@
         </div>
     </div>
     <div class='row'>
-        <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>Tickets </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
-                </div>
-                <div class="ibox-content">
-                    <div class="table-responsive">
-                        <table id='table' class="table table-striped table-bordered table-hover tables">
-                            <thead>
-                                <tr>
-                                    <th>Ticket Number</th>
-                                    <th>Requestor</th>
-                                    <th>Subject</th>
-                                    <th>Priority Level</th>
-                                    <th>Staff Assigned</th>
-                                    <th>Date Created</th>
-                                    <th>First Response</th>
-                                    <th>Target</th>
-                                    <th>Closed Date</th>
-                                    <th>Ticket Duration</th>
-                                    <th>%</th>
-                                    <th>Remarks</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $due = 0;
-                                    $avg_percent_total=0;
-                                    $percent_count=0;
-                                    $open=0;
-                                    $delayed=0;
-                                @endphp
-                                @foreach($tickets_this_month_request->whereNotIn('staff_id',[5,10,8]) as $ticket)
-                                <tr>
-                                    <td>{{$ticket->number}}</td>
-                                    <td>{{$ticket->user->name}}</td>
-                                    <td><small>{{$ticket->ticket_data->subject}}</small></td>
-                                    <td>{{$ticket->ticket_data->priority_data->priority_desc}}</td>
-                                    <td>@if($ticket->employee){{$ticket->employee->firstname}} {{$ticket->employee->lastname}}@else No IT Assigned @endif</td>
-                                    <td>{{$ticket->created}}</td>
-                                    <td>@if(count($ticket->reply->reply_thread)>0){{$ticket->reply->reply_thread[0]->created}}@endif</td>
-                                    @php
-                                        $priority = $ticket->ticket_data->priority_data->priority_desc;
-                                        if ($priority == "Low") {
-                                            $per =5;
-                                            $due_date = date('Y-m-d h:m', strtotime('+5 days',strtotime($ticket->created)));
-                                        } elseif ($priority == "Medium") {
-                                            $due_date = date('Y-m-d h:m', strtotime('+3 days',strtotime($ticket->created)));
-                                            $per =3;
-                                        } elseif ($priority == "High") {
-                                            $due_date = date('Y-m-d h:m', strtotime('+1 day',strtotime($ticket->created)));
-                                            $per =1;
-                                        } elseif ($priority == "Critical") {
-                                            $due_date = date('Y-m-d h:m', strtotime('+4 hours',strtotime($ticket->created)));
-                                            $per =.17;
-                                        }
-                                        if($ticket->closed != null)
-                                        {
-                                            $datetime = strtotime($due_date)-strtotime($ticket->closed);
-                                            $datediff = strtotime($ticket->closed)-strtotime($ticket->created);
-                                        }
-                                        else {
-                                            $datetime = strtotime($due_date)-strtotime(date('Y-m-d H:i:s'));
-                                            $datediff = strtotime(date('Y-m-d H:i:s'))-strtotime($ticket->created);
-                                        }
-                                    @endphp
-                                    <td>{{$due_date}}</td>
-                                    <td>@if($ticket->closed != null){{$ticket->closed}}@endif</td>
-                                    <td>
-                                      
-                                        {{number_format($datediff/60/60/24,2)}} Days
-
-                                    </td>
-                                    <td >
-                                        @php
-                                            $percent = (($datediff/60/60/24)/$per)*100;
-                                            $avg_percent_total = $avg_percent_total + $percent;
-                                            $percent_count++;
-
-                                        @endphp
-                                        {{number_format($percent,2)}} %
-                                    </td>
-                                    <td>
-                                        @if($datetime>=0)
-                                        Not Delayed
-                                        @else
-                                        @php
-                                            $delayed++;
-                                        @endphp
-                                            Delayed
-                                        @endif
-                                    </td>
-                                    <td>{{$ticket->status_data->name}}</td>
-                                    @php
-                                        if(($ticket->status_data->name == "Open") && ($datetime<0))
-                                        {
-                                            $due++;
-                                        }
-                                    @endphp
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+        <div class='col-lg-12'>
+            <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Tickets </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
                     </div>
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <table id='table' class="table tablesa table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket Number</th>
+                                        <th>Requestor</th>
+                                        <th>Subject</th>
+                                        <th>Priority Level</th>
+                                        <th>Staff Assigned</th>
+                                        <th>Date Created</th>
+                                        <th>First Response</th>
+                                        <th>Target</th>
+                                        <th>Closed Date</th>
+                                        <th>Ticket Duration</th>
+                                        <th>%</th>
+                                        <th>Remarks</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $due = 0;
+                                        $avg_percent_total=0;
+                                        $percent_count=0;
+                                        $open=0;
+                                        $delayed=0;
+                                    @endphp
+                                    @foreach($tickets_this_month_request->whereNotIn('staff_id',[5,10,8]) as $ticket)
+                                    <tr>
+                                        <td>{{$ticket->number}}</td>
+                                        <td>{{$ticket->user->name}}</td>
+                                        <td><small>{{$ticket->ticket_data->subject}}</small></td>
+                                        <td>{{$ticket->ticket_data->priority_data->priority_desc}}</td>
+                                        <td>@if($ticket->employee){{$ticket->employee->firstname}} {{$ticket->employee->lastname}}@else No IT Assigned @endif</td>
+                                        <td>{{$ticket->created}}</td>
+                                        <td>@if(count($ticket->reply->reply_thread)>0){{$ticket->reply->reply_thread[0]->created}}@endif</td>
+                                        @php
+                                            $priority = $ticket->ticket_data->priority_data->priority_desc;
+                                            if ($priority == "Low") {
+                                                $per =5;
+                                                $due_date = date('Y-m-d h:m', strtotime('+5 days',strtotime($ticket->created)));
+                                            } elseif ($priority == "Medium") {
+                                                $due_date = date('Y-m-d h:m', strtotime('+3 days',strtotime($ticket->created)));
+                                                $per =3;
+                                            } elseif ($priority == "High") {
+                                                $due_date = date('Y-m-d h:m', strtotime('+1 day',strtotime($ticket->created)));
+                                                $per =1;
+                                            } elseif ($priority == "Critical") {
+                                                $due_date = date('Y-m-d h:m', strtotime('+4 hours',strtotime($ticket->created)));
+                                                $per =.17;
+                                            }
+                                            if($ticket->closed != null)
+                                            {
+                                                $datetime = strtotime($due_date)-strtotime($ticket->closed);
+                                                $datediff = strtotime($ticket->closed)-strtotime($ticket->created);
+                                            }
+                                            else {
+                                                $datetime = strtotime($due_date)-strtotime(date('Y-m-d H:i:s'));
+                                                $datediff = strtotime(date('Y-m-d H:i:s'))-strtotime($ticket->created);
+                                            }
+                                        @endphp
+                                        <td>{{$due_date}}</td>
+                                        <td>@if($ticket->closed != null){{$ticket->closed}}@endif</td>
+                                        <td>
+                                        
+                                            {{number_format($datediff/60/60/24,2)}} Days
 
-                </div>
+                                        </td>
+                                        <td >
+                                            @php
+                                                $percent = (($datediff/60/60/24)/$per)*100;
+                                                $avg_percent_total = $avg_percent_total + $percent;
+                                                $percent_count++;
+
+                                            @endphp
+                                            {{number_format($percent,2)}} %
+                                        </td>
+                                        <td>
+                                            @if($datetime>=0)
+                                            Not Delayed
+                                            @else
+                                            @php
+                                                $delayed++;
+                                            @endphp
+                                                Delayed
+                                            @endif
+                                        </td>
+                                        <td>{{$ticket->status_data->name}}</td>
+                                        @php
+                                            if(($ticket->status_data->name == "Open") && ($datetime<0))
+                                            {
+                                                $due++;
+                                            }
+                                        @endphp
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
             </div>
-</div>
+        </div>
+        <div class='col-lg-12'>
+            <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>SCRF </h5> <span class="label label-info pull-right">as of {{date('M Y')}}</span>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <table  class="table tablesa table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Developer</th>
+                                        <th>Project</th>
+                                        <th>Type</th>
+                                        <th>Date Received</th>
+                                        <th>Due Date</th>
+                                        <th>Date Finished</th>
+                                        <th>Status</th>
+                                        <th>Remars</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($issues as $issue)
+                                    <tr>
+                                        <td><a href='https://wgroup-projects.atlassian.net/jira/software/projects/SYSDEV/issues/{{$issue['key']}}' target='_blank'>{{$issue['key']}}</a></td>
+                                        <td>{{$issue['fields']['assignee']['displayName']}}</td>
+                                        <td>{{$issue['fields']['customfield_10032']['value']}}</td>
+                                        <td>@isset($issue['fields']['customfield_10051']['value'])
+                                            {{ $issue['fields']['customfield_10051']['value'] }}
+                                        @endisset</td>
+                                        <td>{{$issue['fields']['customfield_10050']}}</td>
+                                        <td>{{$issue['fields']['duedate']}}</td>
+                                        <td>{{$issue['fields']['customfield_10075']}}</td>
+                                        <td>{{$issue['fields']['status']['name']}}</td>
+                                        <td>@if($issue['fields']['customfield_10075'] > $issue['fields']['duedate']) Delayed @else Not Delay @endif</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 @section('footer')
@@ -372,6 +418,16 @@ $('.tables').DataTable({
         {extend: 'excel', title: 'Ticketing'}
     ]
 
+});
+$('.tablesa').DataTable({
+    pageLength: 10, // Set pagination to 10 rows per page
+    paginate: true, // Enable pagination
+    responsive: true,
+    dom: '<"html5buttons"B>lTfgitp',
+    buttons: [
+        { extend: 'csv', title: 'Ticketing' },
+        { extend: 'excel', title: 'Ticketing' }
+    ]
 });
 
 });

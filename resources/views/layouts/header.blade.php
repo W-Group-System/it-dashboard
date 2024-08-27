@@ -91,6 +91,28 @@
     <div id="wrapper">
       <div id="page-wrapper" class="gray-bg">
         <div class="row border-bottom white-bg ">
+          <nav class="navbar navbar-static-top container" role="navigation">
+              <div class="navbar-header ">
+                  <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                      <i class="fa fa-reorder"></i>
+                  </button>
+                  <a href="{{url('/report')}}" onclick='show();' class="align-middle" > <img  style='margin-top:10px;margin-left:25px;margin-bottom:5px;' src="{{URL::asset('/img/sap-logo.png')}}" height='45px' alt="AVATAR"></a>
+              </div>
+              <div class="navbar-collapse collapse justify-content-center" id="navbar">
+                <ul class="nav navbar-nav">
+                  <li class="">
+                      <a aria-expanded="false" role="button" href="{{url('/')}}">Ticketing</a>
+                  </li>
+                  {{-- <li class="">
+                      <a aria-expanded="false" role="button" href="{{url('/servers')}}">Servers/Biometrics</a>
+                  </li>  
+                  <li class="">
+                      <a aria-expanded="false" role="button" href="{{url('/systems')}}">SCRF</a>
+                  </li> --}}
+                 
+              </ul>
+              </div>
+          </nav>
         </div>
           @yield('content')
       
@@ -119,6 +141,7 @@
 <!-- Custom and plugin javascript -->
 <script src="{{ asset('inside/login_css/js/inspinia.js')}}"></script>
 <script src="{{ asset('inside/login_css/js/plugins/pace/pace.min.js')}}"></script>
+{{-- @include('sweetalert::alert') --}}
 @yield('footer')
 <script>
    function myFunction() {
