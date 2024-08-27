@@ -15,7 +15,7 @@ class ReportController extends Controller
         $apiEndpoint = '/rest/api/2/search'; // Endpoint for searching issues
         $projectKey = 'SYSDEV'; // Replace with the issue key you want to fetch
         $username = 'renz.cabato+1@wgroup.com.ph'; // Replace with your JIRA username (email)
-        $apiToken = 'ATATT3xFfGF0jjUpscIy8_gcfU-Tb55LStavhoRe219lEPHYR8p3ekTmE4hnYkoP2BV6YYlBENiKyoC9-dWzJVfIyuz65Z_7ZvL7l-6XSTtItzoisy1duLiQruduJZGf7EwW-Qbl64ZZ2-ZZCHEnIL2lhZX9KkmWoXUD49SJ83j0V05Ghga6MEY=704BF4EF';
+        $apiToken = 'ATATT3xFfGF06CZZKu2nWwMeIOuMLfX4YUmYPWQSG16lS5s7dDAdqHLmDuigGYWXEVSzxOvjedHT2YwCHoNC7iBPd52fct_RrrP15B0s8PHCWLaFGxj9wP1gzsSIK72eCJbo6J-RtwvzyQytDsnLhmNpRagELBRfS28IQ_5ZgqBJX1E03zQrgEg=D0DA051A';
 
        
         // Function to get all issues from a project
@@ -64,6 +64,7 @@ class ReportController extends Controller
         
                 // Decode the JSON response
                 $data = json_decode($response, true);
+                // dd($data);
                 curl_close($ch);
         
                 // Add issues to the allIssues collection
