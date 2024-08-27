@@ -11,15 +11,15 @@ class ReportController extends Controller
     public function index(Request $request) {
 
         // JIRA configuration
-        $jiraUrl = 'https://wgroup-projects.atlassian.net'; // Replace with your JIRA instance URL
-        $apiEndpoint = '/rest/api/2/search'; // Endpoint for searching issues
-        $projectKey = 'SYSDEV'; // Replace with the issue key you want to fetch
-        $username = 'renz.cabato+1@wgroup.com.ph'; // Replace with your JIRA username (email)
-        $aaa = 'ATATT3xFfGF0jjUpscIy8_gcfU-Tb55LStavhoRe219lEPHYR8p3ekTmE4hnYkoP2BV6YYlBENiKyoC9-dWzJVfIyuz65Z_7ZvL7l-6XSTtItzoisy1duLiQruduJZGf7EwW-Qbl64ZZ2-ZZCHEnIL2lhZX9KkmWoXUD49SJ83j0V05Ghga6MEY=704BF4EF';
+        $jiraUrl = env('JIRA_API_URL');
+        $apiEndpoint = env('JIRA_API_ENDPOINT');
+        $projectKey = env('JIRA_PROJECT_KEY');
+        $username = env('JIRA_USERNAME');
+        $apiToken = env('JIRA_API_TOKEN');
 
        
         // Function to get all issues from a project
-        function getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $aaa,$request): Collection
+        function getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $apiToken,$request): Collection
         {
             $date_to = date('Y-m-t',strtotime($request->month."-01"));
             $date = date('Y-m-d',strtotime($request->month."-01"));
@@ -77,7 +77,7 @@ class ReportController extends Controller
             return $allIssues;
         }
 
-        $issues = getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $aaa,$request);
+        $issues = getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $apiToken,$request);
         // dd($issues[0]);
         $months = [];
         
