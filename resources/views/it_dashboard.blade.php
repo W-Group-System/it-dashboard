@@ -369,7 +369,7 @@
                                         <td>{{$issue['fields']['customfield_10075']}}</td>
                                         <td>{{$issue['fields']['status']['name']}}</td>
                                         <td>
-                                            {{dd($issue['attachments'])}}
+                                            {{-- {{dd($issue['attachments'])}} --}}
                                             @foreach($issue['attachments'] as $attachment)
                                             <a href='{{url("/images/".$attachment["filename"])}}' target='_blank'><i class="fa fa-file-pdf-o"></i></a> <br>
                                             @endforeach
