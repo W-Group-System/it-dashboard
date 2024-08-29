@@ -342,12 +342,14 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Developer</th>
+                                        <th>Title</th>
                                         <th>Project</th>
                                         <th>Type</th>
                                         <th>Date Received</th>
                                         <th>Due Date</th>
                                         <th>Date Finished</th>
                                         <th>Status</th>
+                                        <th>Attachments</th>
                                         <th>Remars</th>
                                        
                                     </tr>
@@ -357,6 +359,7 @@
                                     <tr>
                                         <td><a href='https://wgroup-projects.atlassian.net/jira/software/projects/SYSDEV/issues/{{$issue['key']}}' target='_blank'>{{$issue['key']}}</a></td>
                                         <td>{{$issue['fields']['assignee']['displayName']}}</td>
+                                        <td>{{$issue['fields']['summary']}}</td>
                                         <td>{{$issue['fields']['customfield_10032']['value']}}</td>
                                         <td>@isset($issue['fields']['customfield_10051']['value'])
                                             {{ $issue['fields']['customfield_10051']['value'] }}
@@ -365,7 +368,25 @@
                                         <td>{{$issue['fields']['duedate']}}</td>
                                         <td>{{$issue['fields']['customfield_10075']}}</td>
                                         <td>{{$issue['fields']['status']['name']}}</td>
-                                        <td>@if($issue['fields']['customfield_10075'] > $issue['fields']['duedate']) Delayed @else Not Delay @endif</td>
+                                        <td>
+                                            {{dd($issue['attachments'])}}
+                                            @foreach($issue['attachments'] as $attachment)
+                                            <a href='{{url("/images/".$attachment["filename"])}}' target='_blank'><i class="fa fa-file-pdf-o"></i></a> <br>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @if($issue['fields']['customfield_10075'])
+                                                @if($issue['fields']['customfield_10075'] > $issue['fields']['duedate']) 
+                                                Delayed 
+                                                @else Not Delay 
+                                                @endif
+                                            @else
+                                                @if(date('Y-m-d') > $issue['fields']['duedate']) 
+                                                Delayed 
+                                                @else Not Delay 
+                                                @endif
+                                            @endif
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
