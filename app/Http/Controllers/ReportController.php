@@ -30,7 +30,11 @@ class ReportController extends Controller
                 $date = date('Y-m-01');
             }
         
-            $jql = "project={$projectKey} AND (created >= '{$date}' AND created <= '{$date_to}')";
+            $jql = "project={$projectKey} AND (
+                (created >= '{$date}' AND created <= '{$date_to}') OR
+                (\"date received\" >= '{$date}' AND \"date received\" <= '{$date_to}')
+            )";
+            
             $startAt = 0; // Start from the beginning
             $maxResults = 1000; // Maximum results per request
             $allIssues = collect(); // Initialize a Laravel Collection
@@ -62,6 +66,7 @@ class ReportController extends Controller
         
                 // Decode the JSON response
                 $data = json_decode($response, true);
+                // dd($data);
                 curl_close($ch);
         
                 // Add issues to the allIssues collection
@@ -199,6 +204,7 @@ class ReportController extends Controller
 
             
         $issues = getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $apiToken,$request);
+        // dd($issues);
         // dd($issues[0]);
         $months = [];
         
