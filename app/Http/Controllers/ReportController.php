@@ -248,7 +248,7 @@ class ReportController extends Controller
             // })
             ->get(); 
         }
-        $url = 'https://hris.wsystem.online/get-devices';
+        $url = 'https://wpro.wgroup.space/get-devices';
 
         $response = file_get_contents($url);
         $biometrics = json_decode($response);
