@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\OstTicket;
 use App\Employee;
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 
@@ -206,6 +207,18 @@ class ReportController extends Controller
         // $issues = getIssuesFromProject($jiraUrl, $apiEndpoint, $projectKey, $username, $apiToken,$request);
         // dd($issues);
         // dd($issues[0]);
+
+        // ClickUp Configuration
+        $client = new Client();
+        $response = $client->request('GET', 'https://api.clickup.com/api/v2/list/'.env('LIST_ID').'/task', [
+            'headers' => [
+                'Authorization' => env('CLICKUP_TOKEN'),
+                'accept' => 'application/json',
+            ],
+        ]);
+        $get_tasks = json_decode($response->getBody());
+        $task_lists = collect($get_tasks->tasks)->sortBy('name');
+        
         $months = [];
         
        
@@ -271,6 +284,7 @@ class ReportController extends Controller
             'biometrics' => $biometrics,
             'months' => $months,
             // 'issues' => $issues,
+            'task_lists' => $task_lists
         )
     );
     }

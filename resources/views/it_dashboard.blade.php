@@ -343,15 +343,14 @@
                                         <th>#</th>
                                         <th>Developer</th>
                                         <th>Title</th>
-                                        <th>Project</th>
+                                        {{-- <th>Project</th> --}}
                                         <th>Type</th>
                                         <th>Date Received</th>
                                         <th>Due Date</th>
                                         <th>Date Finished</th>
                                         <th>Status</th>
-                                        <th>Attachments</th>
-                                        <th>Remars</th>
-                                       
+                                        {{-- <th>Attachments</th>
+                                        <th>Remarks</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -388,6 +387,55 @@
                                         </td>
                                     </tr>
                                     @endforeach --}}
+                                    @foreach ($task_lists as $task)
+                                        @php
+                                            $assigns = collect($task->assignees)->first();
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $task->name }}</td>
+                                            <td>
+                                                @if ($assigns)
+                                                    {{ $assigns->username }}
+                                                @endif
+                                            </td>
+                                            <td>{{ $task->text_content }}</td>
+                                            {{-- <td></td> --}}
+                                            <td>
+                                                @if($task->priority)
+                                                    {{ $task->priority->priority }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $dateCreated = $task->date_created / 1000;
+                                                @endphp
+                                                @if ($task->date_created)
+                                                    {{ date('Y-m-d', $dateCreated) }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $dueDate = $task->due_date / 1000;
+                                                @endphp
+                                                @if($task->due_date)
+                                                    {{ date('Y-m-d', $dueDate) }}
+                                                @endif
+                                            </td>   
+                                            <td>
+                                                @php
+                                                    $dateDone = $task->date_done / 1000;
+                                                @endphp
+                                                @if($task->date_done)
+                                                    {{ date('Y-m-d', $dateDone) }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ $task->status->status }}
+                                            </td>
+                                            {{-- <td></td>
+                                            <td></td> --}}
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
